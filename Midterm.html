@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Event Driven (Midterm Exam)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500&display=swap');
+        
+     body {
+         font-family: Montserrat,Arial, Helvetica, sans-serif;
+         background-color:#f7f7f7;
+         }
+     
+         * {box-sizing: border-box}
+         /* Add padding to container elements */
+         form {
+         padding: 20px;
+         width:100%;
+         background:white;
+         }
+         /* Full-width input fields */
+         input[type=text], input[type=number], select {
+         width: 100%;
+         padding: 10px;
+         margin: 5px 0 22px 0;
+         display: inline-block;
+         border: none;
+         background: #f7f7f7;
+         font-family: Montserrat,Arial, Helvetica, sans-serif;
+         }
+     
+       
+         input[type=phone], select {
+         width: 100%;
+         padding: 15px;
+         margin: 5px 0 22px 0;
+         display: inline-block;
+         border: none;
+         background: #f7f7f7;
+         }
+         /* Set a style for all buttons */
+         button {
+         background-color: #0eb7f4;
+         color: white;
+         padding: 14px 20px;
+         margin: 8px 0;
+         border: none;
+         cursor: pointer;
+         width: 100%;
+         opacity: 0.9;
+         font-size:16px;
+         font-family: Montserrat,Arial, Helvetica, sans-serif;
+         border-radius:10px;
+         }
+         button:hover {
+         opacity:1;
+         }
+         .ptag{
+         color: red;
+         }
+         /* Change styles for signup button on extra small screens */
+         @media screen and (max-width: 300px) {
+         .signupbtn {
+         width: 100%;
+         }
+         }
+    </style>
+</head>
+<body class="p-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <form onsubmit="saveProduct(event)">
+                <h3>Product Management</h3>
+                <p>* - Required Fields</p>
+
+                 <label for="prodid"><b>Product ID <span class = 'text-danger'>*</span></b></label>
+                  <input  type="text" readonly value = "EVNT-DRIV-MID">
+                  
+                
+                <label for="prodname"><b>Product Name <span class='text-danger'>*</span></b></label>
+                <input type="text" id="prodname" required>
+                
+                <label for="prodcategory"><b>Category<span class='text-danger'>*</span></b></label>
+                <select id="prodcategory" required>
+                    <option value="">--Select Category--</option>
+                    <option value="Food and Beverage">Food and Beverage</option>
+                    <option value="Kitchen Appliances">Kitchen Appliances</option>
+                    <option value="IT Equipment">IT Equipment</option>
+                    <option value="Shoes and Clothing">Shoes and Clothing</option>
+                </select>
+                
+                <label for="sellprice"><b>Selling Price <span class='text-danger'>*</span></b></label>
+                <input type="number" id="sellprice" name="sellprice" required>
+                
+                <button class="bg-primary btn-sm" type='submit'>Save</button>
+            </form>
+        </div>
+        <div class="col-lg-8">
+            <div class="row mb-4">
+                <!-- Cards for category counts will be dynamically generated here -->
+            </div>
+            <select class='bg-white' id='filterCategory' style='border: 1px solid #ddd !important;' onchange='filterCategory()'>
+                <option value="">--Filter by Category--</option>
+                <option value="See All">See All</option>
+                <option value="Food and Beverage">Food and Beverage</option>
+                <option value="Kitchen Appliances">Kitchen Appliances</option>
+                <option value="IT Equipment">IT Equipment</option>
+                <option value="Shoes and Clothing">Shoes and Clothing</option>
+            </select>
+            <table class="table table-responsive ">
+                <thead class='text-center'>
+                    <tr>
+                        <th scope="col" class="bg-primary text-white">Product ID</th>
+                        <th scope="col" class="bg-primary text-white">Name</th>
+                        <th scope="col" class="bg-primary text-white">Category</th>
+                        <th scope="col" class="bg-primary text-white">Selling Price</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyproducts" class='text-center'>
+                    <!-- Product records will be dynamically generated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NWyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script>
+        // JavaScript code for product recording system goes here
+        let productSystem = {
+            productCount: { 'Food and Beverage': 0, 'Kitchen Appliances': 0, 'IT Equipment': 0, 'Shoes and Clothing': 0 },
+            products: [],
+
+            addProduct: function(category, name, price) {
+                let productID = `EVNT-DRIV-MID-${++this.productCount[category]}`;
+                let product = { productID, category, name, price };
+                this.products.push(product);
+                this.displayProductRecords();
+                this.updateCategoryCount();
+            },
+
+            displayProductRecords: function() {
+                let tbody = document.getElementById('tbodyproducts');
+                tbody.innerHTML = '';
+
+                this.products.forEach(product => {
+                    let row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.productID}</td>
+                        <td>${product.name}</td>
+                        <td>${product.category}</td>
+                        <td>${product.price}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            },
+
+            updateCategoryCount: function() {
+                let categories = Object.keys(this.productCount);
+                categories.forEach(category => {
+                    let count = this.products.filter(product => product.category === category).length;
+                    document.getElementById(`count-${category.split(' ').join('-')}`).textContent = count;
+                    
+                });
+            },
+
+            filterCategory: function() {
+                let selectedCategory = document.getElementById('filterCategory').value;
+                let filteredProducts = (selectedCategory === 'See All') ? this.products : this.products.filter(product => product.category === selectedCategory);
+                this.displayFilteredProducts(filteredProducts);
+            },
+
+            displayFilteredProducts: function(filteredProducts) {
+                let tbody = document.getElementById('tbodyproducts');
+                tbody.innerHTML = '';
+
+                filteredProducts.forEach(product => {
+                    let row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.productID}</td>
+                        <td>${product.name}</td>
+                        <td>${product.category}</td>
+                        <td>${product.price}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        };
+
+        function filterCategory() {
+            productSystem.filterCategory();
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+            let category = document.getElementById('prodcategory').value;
+            let name = document.getElementById('prodname').value;
+            let price = document.getElementById('sellprice').value;
+
+            if (category && name && price) {
+                productSystem.addProduct(category, name, price);
+
+                document.getElementById('prodname').value = '';
+                document.getElementById('sellprice').value = '';
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        window.filterCategory = filterCategory;
+        window.saveProduct = saveProduct;
+
+        // Initialize category counts
+        window.addEventListener('DOMContentLoaded', function() {
+            let categories = Object.keys(productSystem.productCount);
+            let countContainer = document.querySelector('.row.mb-4');
+            categories.forEach(category => {
+                let col = document.createElement('div');
+                col.className = 'col-xl-3 col-lg-6';
+                col.innerHTML = `
+                    <div class="card card-stats mb-4 mb-xl-0 rounded-0">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <small class="text-muted mb-0">${category}</small><br/>
+                                    <span id="count-${category.split(' ').join('-')}" class="h2 font-weight-bold mb-0 text-primary">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                countContainer.appendChild(col);
+            });
+        });
+    </script>
+</body>
+</html>
